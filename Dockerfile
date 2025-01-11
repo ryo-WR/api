@@ -3,18 +3,17 @@ FROM php:8.3.14-fpm
 
 # 必要なPHP拡張モジュールをインストール
 RUN apt-get update && apt-get install -y \
-    git \
     unzip \
     libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Composerをインストール
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www
 
-# 権限を設定
-RUN chown -R www-data:www-data /var/www
+# Xdebug のインストール
+RUN pecl install xdebug \ && docker-php-ext-enable xdebug
 
-EXPOSE 9000
-CMD ["php-fpm"]
+# Xdebug 設定を追加
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
