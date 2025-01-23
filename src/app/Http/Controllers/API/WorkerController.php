@@ -5,13 +5,21 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Worker;
+use App\Services\WorkerService;
 
 class WorkerController extends Controller
 {
+    protected $worker_service;
+
+    public function __construct(WorkerService $worker_service)
+    {
+        $this->worker_service = $worker_service;
+    }
+
     public function index()
     {
-        $workers = Worker::all();
-        return view('workers', compact('workers'));
+        $workers = $this->worker_service->getAllWorkers();
+        return response()->json($workers);
     }
 
     public function store(Request $request)
@@ -26,35 +34,25 @@ class WorkerController extends Controller
             'level' => 'required|string|max:255',
         ]);
 
-        $worker = Worker::create($validated);
-
-         // 一覧ページにリダイレクト
-         return redirect()->route('workers.index')->with('success', 'Worker added successfully!');
+        $this->worker_service->createWorker($validated);
+        return response()->json(['message' => 'Worker created successfully']);
     }
 
     public function show($id)
     {
-        $worker = Worker::find($id);
-        if (!$worker) {
-            return response()->json([
-                'message' => 'Worker not found'
-            ], 404);
-        }
-        return response()->json($worker);
+        $updated = $this->worker_service->getWorkerById($id);
+
+        return $updated
+            ? response()->json($Worker)
+            : response()->json(['message' => 'Worker not found'], 404);
     }
 
-    /**
-     * Workerを削除する
-     */
     public function destroy($id)
     {
-        $worker = Worker::find($id);
-        if (!$worker) {
-            return response()->json(['message' => 'Worker not found'], 404);
-        }
+        $deleted = $this->worker_service->deleteWorker($id);
 
-        $worker->delete();
-
-        return response()->json(['message' => 'Worker deleted successfully']);
+        return $deleted 
+            ? response()->json(['message' => 'Worker deleted successfully'])
+            : response()->json(['message' => 'Worker not found'], 404);
     }
 }
