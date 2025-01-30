@@ -48,4 +48,4 @@ class WorkerWebController extends Controller
     Http::delete("{$this->apiBaseUrl}/{$id}");
     return redirect()->route('web.workers.index');
   }
- }
+}
