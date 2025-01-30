@@ -1,18 +1,20 @@
 <?php
 
+use App\Http\Controllers\API\WorkerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\WorkerController;
-
-Route::get('/workers', [WorkerController::class, 'index']); // すべてのWorkerを取得
-Route::post('/workers', [WorkerController::class, 'store']); // 新しいWorkerを作成
 
 Route::get('/user', function (Request $requesut) {
   return $requesut->workers();
 })->middleware('auth:sanctum');
 
-Route::get('/sample', function (Request $request) {
-  return response()->json([
-      'message' => 'Hello, API!'
+
+Route::prefix('v1')->name('api.')->group(function () {
+  Route::apiResources([
+    'worker' => App\Http\Controllers\API\WorkerController::class,
   ]);
+});
+
+Route::prefix('v1')->name('api.')->group(function () {
+  Route::get('worker', [WorkerController::class, 'edit'])->name('worker.edit');
 });

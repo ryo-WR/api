@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Worker;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Repositories\WorkerRepository;
 
 class WorkerService
@@ -20,7 +18,7 @@ class WorkerService
       return $this->worker_repository->getAllWorkers();
     }
 
-    public function getWorkerById(int $id): Worker {
+    public function getWorkerById(int $id): ?Worker {
       return $this->worker_repository->getWorkerById($id);
     }
 
@@ -29,7 +27,7 @@ class WorkerService
     }
 
     public function updateWorker(int $id, array $data): bool {
-      return $this->worker_repository->update($id, $data);
+      return $this->worker_repository->updateWorker($id, $data);
     }
 
     public function deleteWorker(int $id): bool {

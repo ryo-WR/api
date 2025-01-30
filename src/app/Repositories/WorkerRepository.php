@@ -15,7 +15,8 @@ class WorkerRepository
 
   public function getWorkerById($id)
   {
-    return DB::table('workers')->where('id', $id)->first();
+    $result = DB::table('workers')->where('id', $id)->first();
+    return $result ? $result : null;
   }
 
   public function create(array $data)
@@ -26,8 +27,15 @@ class WorkerRepository
     return DB::table('workers')->insert($data);
   }
 
-  public function delete($id)
+  public function updateWorker(int $id, array $data) : bool
   {
-    return DB::table('workers')->where('id', $id)->delete();
+    $data['updated_at'] = Carbon::now();
+
+    return DB::table('workers')->where('id', $id)->update($data) > 0;
+  }
+
+  public function delete(int $id) : bool
+  {
+    return DB::table('workers')->where('id', $id)->delete() > 0;
   }
 }

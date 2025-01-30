@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Worker;
 use App\Services\WorkerService;
 
 class WorkerController extends Controller
@@ -40,11 +39,26 @@ class WorkerController extends Controller
 
     public function show($id)
     {
-        $updated = $this->worker_service->getWorkerById($id);
+        $worker = $this->worker_service->getWorkerById($id);
 
-        return $updated
-            ? response()->json($Worker)
+        return $worker
+            ? response()->json($worker)
             : response()->json(['message' => 'Worker not found'], 404);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $updated = $this->worker_service->updateWorker($id, $validated);
+        return $updated
+            ? response()->json(['message' => 'Worker updated successfully'])
+            : response()->json(['message' => 'Worker not found'], 404); 
     }
 
     public function destroy($id)
